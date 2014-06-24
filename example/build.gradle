@@ -1,0 +1,80 @@
+buildscript {
+    dependencies {
+        classpath 'com.github.skhatri:gradle-appthwack-plugin:1.0.0'
+        classpath 'org.apache.httpcomponents:httpclient:4.3.4'
+        classpath 'org.apache.httpcomponents:httpcore-nio:4.3.2'
+        classpath 'org.apache.httpcomponents:httpmime:4.3.4'
+        classpath 'com.fasterxml.jackson.core:jackson-core:2.4.1'
+        classpath 'com.fasterxml.jackson.core:jackson-databind:2.4.1'
+        classpath 'com.fasterxml.jackson.core:jackson-annotations:2.4.1'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'appthwack-tasks'
+
+at {
+    apiKey = 'XB89Faglymbuk9sXLaMR5owOXrasYbDzCIwzPCq2'
+
+    newProject {
+        projectName = project.ext['test.project.name']
+        projectType = project.ext['type']
+    }
+
+    newPool {
+        name = project.ext['pool.name']
+        devices = project.ext['pool.devices']
+    }
+
+    ipa {
+        name = project.ext['ipa.name']
+        file = project.ext['ipa.file']
+        type = 'iosapp'
+    }
+
+    tests {
+        name = project.ext['test.name']
+        file = project.ext['test.file']
+        type = 'calabash'
+    }
+
+
+    run {
+
+        projectId = project.ext['test.project.id']
+        projectName = project.ext['test.project.name']
+
+        poolId = project.ext['pool.id']
+        poolName = project.ext['pool.name']
+
+        ipaFileId = project.ext['ipa.id']
+        ipaFileName = project.ext['ipa.name']
+
+        testFileId = project.ext['test.id']
+        testFileName = project.ext['test.name']
+
+    }
+}
+/*
+    //TODO
+    status {
+        project = project.ext['project.id']
+        runId = project.ext['run.id']
+        //get run id from java.io.tmpDir if run.id = empty
+    }
+
+    reports {
+        project = project.ext['project.id']
+        maxRows = project.ext['report.max.rows'] //or 10
+        //save pageId and move to next if called subsequently
+    }
+    grant {
+        project = project.ext['project.id']
+        runId = project.ext['run.id']
+        //get run id from java io tmpDir if run.id = empty
+    }
+
+*/
+

@@ -1,0 +1,18 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+dependencies {
+    compile localGroovy()
+    compile gradleApi()
+    compile 'org.apache.httpcomponents:httpclient:4.3.4'
+    compile 'org.apache.httpcomponents:httpcore-nio:4.3.2'
+    compile 'org.apache.httpcomponents:httpmime:4.3.4'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.4.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.1'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
