@@ -4,6 +4,10 @@ import com.github.skhatri.appthwack.client.ATClient
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
+import org.joda.time.LocalDateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
+import org.joda.time.format.DateTimeParser
 
 class RunTestTask extends AppthwackTask {
 
@@ -55,7 +59,7 @@ class RunTestTask extends AppthwackTask {
             throw new GradleException("Specify which project to run test against via projectId or projectName.")
         }
         List projects = atClient.getProjects()
-        Map matched = projects.find { Map item -> item.get("id") as int == project || item.get("name") == projectName }
+        Map matched = projects.sort(new FileAddedDateComparator()).find { Map item -> item.get("id") as int == project || item.get("name") == projectName }
         Integer result = matched?.get("id")
         if (!result) {
             throw new GradleException("Could not find matching project in Appthwack")
@@ -64,13 +68,14 @@ class RunTestTask extends AppthwackTask {
     }
 
     private int validateIpa() {
-        String ipaId = getIpaFileId()?.trim()
+        String ipaId = getIpaFileId()?.trim()?:'-1'
         String ipaName = getIpaFileName()?.trim()
         if (!ipaId && !ipaName) {
             throw new GradleException("Specify which uploaded binary file id or name to test.")
         }
         def files = getFiles()
-        Map matched = files.find { Map item -> item.get("file_id") as int == ipaId || item.get("name") == ipaName }
+
+        Map matched = files.sort(new FileAddedDateComparator()).find { Map item -> item.get("file_id") as int == ipaId as int || item.get("name") == ipaName }
         Integer ipaResult = matched?.get("file_id")
         if (!ipaResult) {
             throw new GradleException("Could not find matching mobile binary in Appthwack")
@@ -78,14 +83,15 @@ class RunTestTask extends AppthwackTask {
         ipaResult
     }
 
+
     private int validateTest() {
-        String testFileId = getTestFileId()?.trim()
+        String testFileId = getTestFileId()?.trim()?:'-1'
         String testFileName = getTestFileName()?.trim()
         if (!testFileId && !testFileName) {
             throw new GradleException("Specify which uploaded test file id or name to use for test.")
         }
         def files = getFiles()
-        Map testMatched = files.find { Map item -> item.get("file_id") as int == testFileId || item.get("name") == testFileName }
+        Map testMatched = files.sort(new FileAddedDateComparator()).find { Map item -> item.get("file_id") as int == testFileId as int || item.get("name") == testFileName }
         Integer testResult = testMatched?.get("file_id")
         if (!testResult) {
             throw new GradleException("Could not find matching test features in Appthwack")
@@ -94,13 +100,13 @@ class RunTestTask extends AppthwackTask {
     }
 
     private int validatePool() {
-        String poolId = getPoolId()?.trim()
+        String poolId = getPoolId()?.trim()?:'-1'
         String poolName = getPoolName()?.trim()
         if (!poolId && !poolName) {
             return -1
         }
         def pools = atClient.getPools()
-        Map matched = pools.find { Map item -> item.get("id") as int == poolId || item.get("name") == poolName }
+        Map matched = pools.find { Map item -> item.get("id") as int == poolId as int || item.get("name") == poolName }
         Integer poolResult = matched?.get("id")
         if (!poolResult) {
             poolResult = -1

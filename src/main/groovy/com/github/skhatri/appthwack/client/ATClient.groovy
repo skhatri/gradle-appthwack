@@ -13,8 +13,10 @@ import org.apache.http.entity.ByteArrayEntity
 import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.content.FileBody
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
+import org.gradle.api.GradleException
 import org.joda.time.LocalDateTime
 
 import java.nio.charset.Charset
@@ -29,38 +31,38 @@ public class ATClient {
     public List getProjects() {
         HttpClient client = HttpClients.custom().build()
         HttpUriRequest request = createGetRequest("/api/project")
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, List.class)
+        callApi(client, request, List)
     }
 
     public List getDevices() {
         HttpClient client = HttpClients.custom().build()
         HttpUriRequest request = createGetRequest("/api/device")
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, List.class)
+        callApi(client, request, List)
     }
 
     public List getPools() {
         HttpClient client = HttpClients.custom().build()
         HttpUriRequest request = createGetRequest("/api/devicepool")
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        println(new String(bytes, Charset.defaultCharset()))
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, List.class)
+        callApi(client, request, List)
     }
 
     public List getFiles() {
         HttpClient client = HttpClients.custom().build()
         HttpUriRequest request = createGetRequest("/api/file")
+        callApi(client, request, List)
+    }
+
+    private <T> T callApi(CloseableHttpClient client, HttpUriRequest request, Class<T> t) {
         HttpResponse response = client.execute(request)
         byte[] bytes = response.getEntity().getContent().getBytes()
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, List.class)
+        int statusCode = response.getStatusLine().getStatusCode()
+        println (new String(bytes))
+        if (statusCode >= 400) {
+            throw new GradleException("Appthwack Error: " + new String(bytes, Charset.forName('UTF-8')))
+        } else {
+            ObjectMapper mapper = new ObjectMapper()
+            mapper.readValue(bytes, t)
+        }
     }
 
     public Map runTests(int projectId, int ipaFileId, int testFileId, int poolId) {
@@ -77,11 +79,7 @@ public class ATClient {
         UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(data)
 
         request.setEntity(formEntity)
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        println new String(bytes, Charset.defaultCharset())
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, Map.class)
+        callApi(client, request, Map)
     }
 
     public Map createDevicePool(String poolName, String devices) {
@@ -93,11 +91,7 @@ public class ATClient {
         UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(data)
 
         request.setEntity(formEntity)
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        println new String(bytes, Charset.defaultCharset())
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, Map.class)
+        callApi(client, request, Map)
     }
 
 
@@ -110,10 +104,7 @@ public class ATClient {
                 .addPart("file", new FileBody(new File(fileName)))
                 .build()
         request.setEntity(multipartEntity)
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, Map.class)
+        callApi(client, request, Map)
     }
 
     public Map createProject(String name, String type) {
@@ -125,11 +116,7 @@ public class ATClient {
         UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(data)
 
         request.setEntity(formEntity)
-        HttpResponse response = client.execute(request)
-        byte[] bytes = response.getEntity().getContent().getBytes()
-        println new String(bytes, Charset.defaultCharset())
-        ObjectMapper mapper = new ObjectMapper()
-        mapper.readValue(bytes, Map.class)
+        callApi(client, request, Map)
     }
 
 

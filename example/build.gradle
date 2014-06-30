@@ -1,12 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'com.github.skhatri:gradle-appthwack:1.0.0'
-        classpath 'org.apache.httpcomponents:httpclient:4.3.4'
-        classpath 'org.apache.httpcomponents:httpcore-nio:4.3.2'
-        classpath 'org.apache.httpcomponents:httpmime:4.3.4'
-        classpath 'com.fasterxml.jackson.core:jackson-core:2.4.1'
-        classpath 'com.fasterxml.jackson.core:jackson-databind:2.4.1'
-        classpath 'com.fasterxml.jackson.core:jackson-annotations:2.4.1'
+        classpath 'com.github.skhatri:gradle-appthwack:1.0.1'
     }
     repositories {
         mavenCentral()
@@ -16,7 +10,7 @@ buildscript {
 apply plugin: 'appthwack-tasks'
 
 at {
-    apiKey = 'XB89Faglymbuk9sXLaMR5owOXrasYbDzCIwzPCq2'
+    apiKey = project.ext['appthwack.apikey'] 
 
     newProject {
         projectName = project.ext['test.project.name']
@@ -43,16 +37,16 @@ at {
 
     run {
 
-        projectId = project.ext['test.project.id']
+        //projectId = project.ext['test.project.id']
         projectName = project.ext['test.project.name']
 
-        poolId = project.ext['pool.id']
+        //poolId = project.ext['pool.id']
         poolName = project.ext['pool.name']
 
-        ipaFileId = project.ext['ipa.id']
+        //ipaFileId = project.ext['ipa.id']
         ipaFileName = project.ext['ipa.name']
 
-        testFileId = project.ext['test.id']
+        //testFileId = project.ext['test.id']
         testFileName = project.ext['test.name']
 
     }
