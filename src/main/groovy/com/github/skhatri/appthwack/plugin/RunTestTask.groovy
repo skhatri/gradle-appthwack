@@ -52,14 +52,15 @@ class RunTestTask extends AppthwackTask {
     }
 
     private int validateProject() {
-        String projectId = getProjectId()?.trim()
+        String projectId = getProjectId()?.trim()?:'-1'
         String projectName = getProjectName()?.trim()
 
         if (!projectId && !projectName) {
             throw new GradleException("Specify which project to run test against via projectId or projectName.")
         }
         List projects = atClient.getProjects()
-        Map matched = projects.sort(new FileAddedDateComparator()).find { Map item -> item.get("id") as int == project || item.get("name") == projectName }
+
+        Map matched = projects.find { Map item -> item.get("id") == projectId as int || item.get("name").toLowerCase() == projectName.toLowerCase() }
         Integer result = matched?.get("id")
         if (!result) {
             throw new GradleException("Could not find matching project in Appthwack")
