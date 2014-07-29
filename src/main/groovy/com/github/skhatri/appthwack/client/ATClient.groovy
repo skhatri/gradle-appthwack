@@ -23,9 +23,15 @@ import java.nio.charset.Charset
 
 public class ATClient {
     private String apiKey
+    private boolean debug
 
     public ATClient(String apiKey) {
+        this(apiKey, false)
+    }
+
+    public ATClient(String apiKey, boolean debug) {
         this.apiKey = apiKey
+        this.debug = false
     }
 
     public List getProjects() {
@@ -56,7 +62,9 @@ public class ATClient {
         HttpResponse response = client.execute(request)
         byte[] bytes = response.getEntity().getContent().getBytes()
         int statusCode = response.getStatusLine().getStatusCode()
-        println (new String(bytes))
+        if(debug) {
+            println (new String(bytes))
+        }
         if (statusCode >= 400) {
             throw new GradleException("Appthwack Error: " + new String(bytes, Charset.forName('UTF-8')))
         } else {

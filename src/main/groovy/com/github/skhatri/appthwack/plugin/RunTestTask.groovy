@@ -75,8 +75,8 @@ class RunTestTask extends AppthwackTask {
             throw new GradleException("Specify which uploaded binary file id or name to test.")
         }
         def files = getFiles()
-
-        Map matched = files.sort(new FileAddedDateComparator()).find { Map item -> item.get("file_id") as int == ipaId as int || item.get("name") == ipaName }
+        Collections.sort(files, new FileAddedDateComparator())
+        Map matched = files.find { Map item -> item.get("file_id") as int == ipaId as int || item.get("name") == ipaName }
         Integer ipaResult = matched?.get("file_id")
         if (!ipaResult) {
             throw new GradleException("Could not find matching mobile binary in Appthwack")
@@ -92,7 +92,8 @@ class RunTestTask extends AppthwackTask {
             throw new GradleException("Specify which uploaded test file id or name to use for test.")
         }
         def files = getFiles()
-        Map testMatched = files.sort(new FileAddedDateComparator()).find { Map item -> item.get("file_id") as int == testFileId as int || item.get("name") == testFileName }
+        Collections.sort(files, new FileAddedDateComparator())
+        Map testMatched = files.find { Map item -> item.get("file_id") as int == testFileId as int || item.get("name") == testFileName }
         Integer testResult = testMatched?.get("file_id")
         if (!testResult) {
             throw new GradleException("Could not find matching test features in Appthwack")
